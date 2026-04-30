@@ -14,6 +14,13 @@ public class AdminSearchContentController {
 
     private final SearchContentService searchContentService;
 
+    @PostMapping("/collect")
+    public String collectSearchContents(@RequestParam String keyword) {
+        searchContentService.collectAllSearchContents(keyword);
+
+        return "검색 결과 수집 완료: " + keyword;
+    }
+
     @PostMapping("/collect/blog")
     public String collectBlogSearchContents(@RequestParam String keyword) {
         searchContentService.collectBlogSearchContents(keyword);

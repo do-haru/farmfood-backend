@@ -98,6 +98,13 @@ public class SearchContentService {
         }
     }
 
+    public void collectAllSearchContents(String keyword) {
+        collectBlogSearchContents(keyword);
+        collectNewsSearchContents(keyword);
+        collectCafeSearchContents(keyword);
+        collectShoppingSearchContents(keyword);
+    }
+
     private LocalDate parsePostdate(String postdate) {
         if (postdate == null || postdate.isBlank()) {
             return null;

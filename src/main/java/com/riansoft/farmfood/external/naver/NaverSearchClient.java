@@ -26,13 +26,15 @@ public class NaverSearchClient {
     private String clientSecret;
 
     public NaverSearchResponse searchBlog(String query) {
-        String url = UriComponentsBuilder
+        URI  url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/blog.json")
                 .queryParam("query", query)
                 .queryParam("display", 10)
                 .queryParam("start", 1)
                 .queryParam("sort", "date")
-                .toUriString();
+                .build()
+                .encode()
+                .toUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
@@ -51,13 +53,15 @@ public class NaverSearchClient {
     }
 
     public NaverSearchResponse searchNews(String query) {
-        String url = UriComponentsBuilder
+        URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/news.json")
                 .queryParam("query", query)
                 .queryParam("display", 10)
                 .queryParam("start", 1)
                 .queryParam("sort", "date")
-                .toUriString();
+                .build()
+                .encode()
+                .toUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
@@ -76,13 +80,15 @@ public class NaverSearchClient {
     }
 
     public NaverSearchResponse searchCafe(String query) {
-        String url = UriComponentsBuilder
+        URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/cafearticle.json")
                 .queryParam("query", query)
                 .queryParam("display", 10)
                 .queryParam("start", 1)
                 .queryParam("sort", "date")
-                .toUriString();
+                .build()
+                .encode()
+                .toUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
