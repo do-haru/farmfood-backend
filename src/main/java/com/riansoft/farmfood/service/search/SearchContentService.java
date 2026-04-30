@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +23,8 @@ public class SearchContentService {
 
     private final NaverSearchClient naverSearchClient;
     private final SearchContentRepository searchContentRepository;
+
+    private final FoodSeedKeywordProvider foodSeedKeywordProvider;
 
     public void collectBlogSearchContents(String searchKeyword) {
         NaverSearchResponse response = naverSearchClient.searchBlog(searchKeyword);
@@ -105,6 +108,15 @@ public class SearchContentService {
         collectShoppingSearchContents(keyword);
     }
 
+    public void collectSeedKeywordSearchContents() {
+        List<String> seedKeywords = foodSeedKeywordProvider.getSeedKeywords();
+
+        for (String seedKeyword : seedKeywords) {
+            collectAllSearchContents(seedKeyword);
+            sleep(1000);
+        }
+    }
+
     private LocalDate parsePostdate(String postdate) {
         if (postdate == null || postdate.isBlank()) {
             return null;
@@ -140,5 +152,14 @@ public class SearchContentService {
 
     private String nullToBlank(String value) {
         return value == null ? "" : value;
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("수집 대기 중 인터럽트 발생", e);
+        }
     }
 }

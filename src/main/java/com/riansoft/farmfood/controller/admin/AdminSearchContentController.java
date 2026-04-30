@@ -14,11 +14,18 @@ public class AdminSearchContentController {
 
     private final SearchContentService searchContentService;
 
+    @PostMapping("/collect/seeds")
+    public String collectSeedKeywordSearchContents() {
+        searchContentService.collectSeedKeywordSearchContents();
+
+        return "키워드 검색 결과 수집 완료";
+    }
+
     @PostMapping("/collect")
     public String collectSearchContents(@RequestParam String keyword) {
         searchContentService.collectAllSearchContents(keyword);
 
-        return "검색 결과 수집 완료: " + keyword;
+        return "전체 검색 결과 수집 완료: " + keyword;
     }
 
     @PostMapping("/collect/blog")
