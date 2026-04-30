@@ -9,9 +9,10 @@ import java.util.Optional;
 
 public interface ExtractedKeywordRepository extends JpaRepository<ExtractedKeyword, Long> {
 
-    Optional<ExtractedKeyword> findByKeywordAndSourceTypeAndExtractedDate(
+    Optional<ExtractedKeyword> findByKeywordAndSourceType(
             String keyword,
-            SourceType sourceType,
-            LocalDateTime extractedDate
+            SourceType sourceType
     );
+
+    Optional<ExtractedKeyword> findTopByOrderByExtractedDateDesc();
 }

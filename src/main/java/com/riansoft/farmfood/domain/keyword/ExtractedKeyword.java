@@ -39,7 +39,8 @@ public class ExtractedKeyword {
         this.extractedDate = extractedDate;
     }
 
-    public void increaseFrequency() {
+    public void increaseFrequencyAndUpdateDate(LocalDateTime extractedDate) {
         this.frequency++;
+        this.extractedDate = extractedDate;
     }
 }

@@ -27,7 +27,12 @@ public class ExtractedKeywordService {
     public void extractKeywords() {
         LocalDateTime extractedDate = LocalDateTime.now();
 
-        List<SearchContent> contents = searchContentRepository.findAll();
+        LocalDateTime lastExtractedDate = extractedKeywordRepository
+                .findTopByOrderByExtractedDateDesc()
+                .map(ExtractedKeyword::getExtractedDate)
+                .orElse(LocalDateTime.MIN);
+
+        List<SearchContent> contents = searchContentRepository.findByCollectedAtAfter(lastExtractedDate);
 
         for (SearchContent content : contents) {
             String text = buildText(content);
@@ -53,13 +58,12 @@ public class ExtractedKeywordService {
 
     private void saveOrIncreaseKeyword(String keyword, SearchContent content, LocalDateTime extractedDate) {
         extractedKeywordRepository
-                .findByKeywordAndSourceTypeAndExtractedDate(
+                .findByKeywordAndSourceType(
                         keyword,
-                        content.getSourceType(),
-                        extractedDate
+                        content.getSourceType()
                 )
                 .ifPresentOrElse(
-                        ExtractedKeyword::increaseFrequency,
+                        extractedKeyword -> extractedKeyword.increaseFrequencyAndUpdateDate(extractedDate),
                         () -> extractedKeywordRepository.save(
                               new ExtractedKeyword(
                                       keyword,
