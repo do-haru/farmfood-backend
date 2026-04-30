@@ -18,4 +18,17 @@ public class NaverSearchItem {
 
     // 뉴스 검색 API 날짜 필드
     private String pubDate;
+
+    // 쇼핑 검색 API 필드
+    private String mallName;
+
+    private String brand;
+
+    private String category1;
+
+    private String category2;
+
+    private String category3;
+
+    private String category4;
 }

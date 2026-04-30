@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+
 @Component
 @RequiredArgsConstructor
 public class NaverSearchClient {
@@ -90,6 +92,33 @@ public class NaverSearchClient {
 
         ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
                 url,
+                HttpMethod.GET,
+                request,
+                NaverSearchResponse.class
+        );
+
+        return response.getBody();
+    }
+
+    public NaverSearchResponse searchShopping(String query) {
+        URI uri = UriComponentsBuilder
+                .fromUriString("https://openapi.naver.com/v1/search/shop.json")
+                .queryParam("query", query)
+                .queryParam("display", 10)
+                .queryParam("start", 1)
+                .queryParam("sort", "sim")
+                .build()
+                .encode()
+                .toUri();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Naver-Client-Id", clientId);
+        headers.set("X-Naver-Client-Secret", clientSecret);
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
+                uri,
                 HttpMethod.GET,
                 request,
                 NaverSearchResponse.class

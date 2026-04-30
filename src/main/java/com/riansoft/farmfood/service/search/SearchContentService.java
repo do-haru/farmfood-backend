@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +77,27 @@ public class SearchContentService {
         }
     }
 
+    public void collectShoppingSearchContents(String searchKeyword) {
+        NaverSearchResponse response = naverSearchClient.searchShopping(searchKeyword);
+
+        System.out.println("shopping total = " + response.getTotal());
+        System.out.println("shopping item size = " + response.getItems().size());
+
+        for (NaverSearchItem item : response.getItems()) {
+            SearchContent content = new SearchContent(
+                    SourceType.SHOPPING,
+                    searchKeyword,
+                    item.getTitle(),
+                    buildShoppingDescription(item),
+                    item.getLink(),
+                    null,
+                    LocalDateTime.now()
+            );
+
+            searchContentRepository.save(content);
+        }
+    }
+
     private LocalDate parsePostdate(String postdate) {
         if (postdate == null || postdate.isBlank()) {
             return null;
@@ -91,5 +114,24 @@ public class SearchContentService {
                 pubDate,
                 DateTimeFormatter.RFC_1123_DATE_TIME
         ).toLocalDate();
+    }
+
+    private String buildShoppingDescription(NaverSearchItem item) {
+        String category = Stream.of(
+                        item.getCategory1(),
+                        item.getCategory2(),
+                        item.getCategory3(),
+                        item.getCategory4()
+                )
+                .filter(value -> value != null && !value.isBlank())
+                .collect(Collectors.joining(" > "));
+
+        return "판매처: " + nullToBlank(item.getMallName())
+                + " / 브랜드: " + nullToBlank(item.getBrand())
+                + " / 카테고리: " + category;
+    }
+
+    private String nullToBlank(String value) {
+        return value == null ? "" : value;
     }
 }

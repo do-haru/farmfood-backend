@@ -34,4 +34,11 @@ public class AdminSearchContentController {
 
         return "카페 검색 결과 수집 완료: " + keyword;
     }
+
+    @PostMapping("/collect/shopping")
+    public String collectShoppingSearchContents(@RequestParam String keyword) {
+        searchContentService.collectShoppingSearchContents(keyword);
+
+        return "쇼핑 검색 결과 수집 완료: " + keyword;
+    }
 }
