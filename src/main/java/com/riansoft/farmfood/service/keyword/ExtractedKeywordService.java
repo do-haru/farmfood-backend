@@ -10,7 +10,7 @@ import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,6 +25,8 @@ public class ExtractedKeywordService {
 
     @Transactional
     public void extractKeywords() {
+        LocalDateTime extractedDate = LocalDateTime.now();
+
         List<SearchContent> contents = searchContentRepository.findAll();
 
         for (SearchContent content : contents) {
@@ -37,7 +39,7 @@ public class ExtractedKeywordService {
                 if (!keywordFilter.isValid(noun)) {
                     continue;
                 }
-                saveOrIncreaseKeyword(noun, content);
+                saveOrIncreaseKeyword(noun, content, extractedDate);
             }
         }
     }
@@ -49,14 +51,12 @@ public class ExtractedKeywordService {
         return title + " " + description;
     }
 
-    private void saveOrIncreaseKeyword(String keyword, SearchContent content) {
-        LocalDate collectedDate = content.getCollectedAt().toLocalDate();
-
+    private void saveOrIncreaseKeyword(String keyword, SearchContent content, LocalDateTime extractedDate) {
         extractedKeywordRepository
-                .findByKeywordAndSourceTypeAndCollectedDate(
+                .findByKeywordAndSourceTypeAndExtractedDate(
                         keyword,
                         content.getSourceType(),
-                        collectedDate
+                        extractedDate
                 )
                 .ifPresentOrElse(
                         ExtractedKeyword::increaseFrequency,
@@ -65,7 +65,7 @@ public class ExtractedKeywordService {
                                       keyword,
                                       content.getSourceType(),
                                       1,
-                                      collectedDate
+                                      extractedDate
                               )
                         )
                 );

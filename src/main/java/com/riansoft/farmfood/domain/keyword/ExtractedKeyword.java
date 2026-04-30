@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,16 +27,16 @@ public class ExtractedKeyword {
     private Integer frequency;
 
     @Column(nullable = false)
-    private LocalDate collectedDate;
+    private LocalDateTime extractedDate;
 
     public ExtractedKeyword(String keyword,
                             SourceType sourceType,
                             Integer frequency,
-                            LocalDate collectedDate) {
+                            LocalDateTime extractedDate) {
         this.keyword = keyword;
         this.sourceType = sourceType;
         this.frequency = frequency;
-        this.collectedDate = collectedDate;
+        this.extractedDate = extractedDate;
     }
 
     public void increaseFrequency() {
