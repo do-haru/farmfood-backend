@@ -72,4 +72,29 @@ public class NaverSearchClient {
 
         return response.getBody();
     }
+
+    public NaverSearchResponse searchCafe(String query) {
+        String url = UriComponentsBuilder
+                .fromUriString("https://openapi.naver.com/v1/search/cafearticle.json")
+                .queryParam("query", query)
+                .queryParam("display", 10)
+                .queryParam("start", 1)
+                .queryParam("sort", "date")
+                .toUriString();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Naver-Client-Id", clientId);
+        headers.set("X-Naver-Client-Secret", clientSecret);
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                NaverSearchResponse.class
+        );
+
+        return response.getBody();
+    }
 }

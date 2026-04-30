@@ -27,4 +27,11 @@ public class AdminSearchContentController {
 
         return "뉴스 검색 결과 수집 완료: " + keyword;
     }
+
+    @PostMapping("/collect/cafe")
+    public String collectCafeSearchContents(@RequestParam String keyword) {
+        searchContentService.collectCafeSearchContents(keyword);
+
+        return "카페 검색 결과 수집 완료: " + keyword;
+    }
 }

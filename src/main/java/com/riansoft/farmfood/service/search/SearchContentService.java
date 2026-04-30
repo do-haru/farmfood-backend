@@ -57,6 +57,24 @@ public class SearchContentService {
         }
     }
 
+    public void collectCafeSearchContents(String searchKeyword) {
+        NaverSearchResponse response = naverSearchClient.searchCafe(searchKeyword);
+
+        for (NaverSearchItem item : response.getItems()) {
+            SearchContent content = new SearchContent(
+                    SourceType.CAFE,
+                    searchKeyword,
+                    item.getTitle(),
+                    item.getDescription(),
+                    item.getLink(),
+                    null,
+                    LocalDateTime.now()
+            );
+            searchContentRepository.save(content);
+
+        }
+    }
+
     private LocalDate parsePostdate(String postdate) {
         if (postdate == null || postdate.isBlank()) {
             return null;
