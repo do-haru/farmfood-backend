@@ -20,6 +20,7 @@ public class ExtractedKeywordService {
     private final Komoran komoran;
     private final SearchContentRepository searchContentRepository;
     private final ExtractedKeywordRepository extractedKeywordRepository;
+    private final KeywordFilter keywordFilter;
 
 
     @Transactional
@@ -33,6 +34,9 @@ public class ExtractedKeywordService {
             List<String> nouns = result.getNouns();
 
             for (String noun : nouns) {
+                if (!keywordFilter.isValid(noun)) {
+                    continue;
+                }
                 saveOrIncreaseKeyword(noun, content);
             }
         }
