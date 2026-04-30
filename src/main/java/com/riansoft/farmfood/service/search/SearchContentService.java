@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -38,10 +39,39 @@ public class SearchContentService {
         }
     }
 
+    public void collectNewsSearchContents(String searchKeyword) {
+        NaverSearchResponse response = naverSearchClient.searchNews(searchKeyword);
+
+        for (NaverSearchItem item : response.getItems()) {
+            SearchContent content = new SearchContent(
+                    SourceType.NEWS,
+                    searchKeyword,
+                    item.getTitle(),
+                    item.getDescription(),
+                    item.getLink(),
+                    parsePubDate(item.getPubDate()),
+                    LocalDateTime.now()
+            );
+
+            searchContentRepository.save(content);
+        }
+    }
+
     private LocalDate parsePostdate(String postdate) {
         if (postdate == null || postdate.isBlank()) {
             return null;
         }
         return LocalDate.parse(postdate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    private LocalDate parsePubDate(String pubDate) {
+        if (pubDate == null || pubDate.isBlank()) {
+            return null;
+        }
+
+        return ZonedDateTime.parse(
+                pubDate,
+                DateTimeFormatter.RFC_1123_DATE_TIME
+        ).toLocalDate();
     }
 }

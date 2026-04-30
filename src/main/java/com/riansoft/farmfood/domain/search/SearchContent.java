@@ -23,13 +23,13 @@ public class SearchContent {
     @Column(nullable = false)
     private String searchKeyword;
 
-    @Column(nullable = false)
-
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "TEXT")
     private String link;
 
     private LocalDate publishedAt;

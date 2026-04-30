@@ -13,5 +13,9 @@ public class NaverSearchItem {
 
     private String description;
 
+    // 블로그 검색 API 날짜 필드
     private String postdate;
+
+    // 뉴스 검색 API 날짜 필드
+    private String pubDate;
 }
