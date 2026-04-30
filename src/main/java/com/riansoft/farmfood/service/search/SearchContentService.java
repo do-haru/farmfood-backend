@@ -30,6 +30,10 @@ public class SearchContentService {
         NaverSearchResponse response = naverSearchClient.searchBlog(searchKeyword);
 
         for (NaverSearchItem item : response.getItems()) {
+            if (isDuplicate(SourceType.BLOG, item.getLink())) {
+                continue;
+            }
+
             SearchContent content = new SearchContent(
                     SourceType.BLOG,
                     searchKeyword,
@@ -48,6 +52,10 @@ public class SearchContentService {
         NaverSearchResponse response = naverSearchClient.searchNews(searchKeyword);
 
         for (NaverSearchItem item : response.getItems()) {
+            if (isDuplicate(SourceType.NEWS, item.getLink())) {
+                continue;
+            }
+
             SearchContent content = new SearchContent(
                     SourceType.NEWS,
                     searchKeyword,
@@ -66,6 +74,10 @@ public class SearchContentService {
         NaverSearchResponse response = naverSearchClient.searchCafe(searchKeyword);
 
         for (NaverSearchItem item : response.getItems()) {
+            if (isDuplicate(SourceType.CAFE, item.getLink())) {
+                continue;
+            }
+
             SearchContent content = new SearchContent(
                     SourceType.CAFE,
                     searchKeyword,
@@ -87,6 +99,10 @@ public class SearchContentService {
         System.out.println("shopping item size = " + response.getItems().size());
 
         for (NaverSearchItem item : response.getItems()) {
+            if (isDuplicate(SourceType.SHOPPING, item.getLink())) {
+                continue;
+            }
+
             SearchContent content = new SearchContent(
                     SourceType.SHOPPING,
                     searchKeyword,
@@ -161,5 +177,13 @@ public class SearchContentService {
             Thread.currentThread().interrupt();
             throw new RuntimeException("수집 대기 중 인터럽트 발생", e);
         }
+    }
+
+    private boolean isDuplicate(SourceType sourceType, String link) {
+        if (link == null || link.isBlank()) {
+            return false;
+        }
+
+        return searchContentRepository.existsBySourceTypeAndLink(sourceType, link);
     }
 }
