@@ -12,6 +12,9 @@ POST http://localhost:8080/api/admin/metrics/shopping-trends/collect
 ## 4. 관리자용 키워드 순위 산출 API
 POST http://localhost:8080/api/admin/rankings/calculate
 
+## 5. 키워드 랭킹 출력 API
+GET http://localhost:8080/api/dashboard/rankings
+
 #  SQL
 
 ## 1. search_content 테이블 조회 및 초기화
@@ -24,8 +27,8 @@ select * from extracted_keyword order by frequency desc;
 
 ## 3. keyword_trend_metric 테이블 조회 및 초기화
 truncate table keyword_trend_metric restart identity;
-select * from keyword_trend_metric order by frequency desc;
+select * from keyword_trend_metric;
 
 ## 4. trend_keyword_ranking 테이블 조회 및 초기화
 truncate table trend_keyword_ranking restart identity;
-select * from trend_keyword_ranking order by frequency desc;
+select * from trend_keyword_ranking order by rank asc;
