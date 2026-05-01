@@ -6,6 +6,8 @@ POST http://localhost:8080/api/admin/search-contents/collect/seeds
 ## 2. 관리자용 키퉈드 추출 API
 POST http://localhost:8080/api/admin/keywords/extract
 
+## 3. 관리자용 키워드 통계 지표 수집 API
+POST http://localhost:8080/api/admin/metrics/shopping-trends/collect
 
 #  SQL
 

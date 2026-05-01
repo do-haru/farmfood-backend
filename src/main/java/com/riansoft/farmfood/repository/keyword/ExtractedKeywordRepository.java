@@ -5,6 +5,7 @@ import com.riansoft.farmfood.domain.search.SourceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface ExtractedKeywordRepository extends JpaRepository<ExtractedKeyword, Long> {
@@ -15,4 +16,6 @@ public interface ExtractedKeywordRepository extends JpaRepository<ExtractedKeywo
     );
 
     Optional<ExtractedKeyword> findTopByOrderByExtractedDateDesc();
+
+    List<ExtractedKeyword> findTop20ByOrderByFrequencyDesc();
 }
