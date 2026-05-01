@@ -4,6 +4,7 @@ import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface KeywordTrendMetricRepository extends JpaRepository<KeywordTrendMetric, Long> {
@@ -13,5 +14,10 @@ public interface KeywordTrendMetricRepository extends JpaRepository<KeywordTrend
             MetricType metricType,
             String period,
             String timeUnit
+    );
+
+    List<KeywordTrendMetric> findByKeywordAndMetricTypeOrderByPeriodAsc(
+            String keyword,
+            MetricType metricType
     );
 }

@@ -15,6 +15,9 @@ POST http://localhost:8080/api/admin/rankings/calculate
 ## 5. 키워드 랭킹 출력 API
 GET http://localhost:8080/api/dashboard/rankings
 
+## 6. 키워드 쇼핑 트렌드 지표 출력 API
+GET http://localhost:8080/api/dashboard/keywords/참외/shopping-trends
+
 #  SQL
 
 ## 1. search_content 테이블 조회 및 초기화
