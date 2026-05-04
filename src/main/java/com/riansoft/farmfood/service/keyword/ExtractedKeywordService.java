@@ -30,7 +30,7 @@ public class ExtractedKeywordService {
         LocalDateTime lastExtractedDate = extractedKeywordRepository
                 .findTopByOrderByExtractedDateDesc()
                 .map(ExtractedKeyword::getExtractedDate)
-                .orElse(LocalDateTime.MIN);
+                .orElse(LocalDateTime.of(2000, 1, 1, 0, 0));
 
         List<SearchContent> contents = searchContentRepository.findByCollectedAtAfter(lastExtractedDate);
 
