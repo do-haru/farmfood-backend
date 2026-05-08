@@ -29,7 +29,7 @@ public class NaverSearchClient {
         URI  url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/blog.json")
                 .queryParam("query", query)
-                .queryParam("display", 10)
+                .queryParam("display", 100)
                 .queryParam("start", 1)
                 .queryParam("sort", "date")
                 .build()

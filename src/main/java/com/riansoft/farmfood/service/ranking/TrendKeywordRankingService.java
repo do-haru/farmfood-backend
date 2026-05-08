@@ -49,6 +49,7 @@ public class TrendKeywordRankingService {
                     keyword.getKeyword(),
                     frequencyScore,
                     trendScore,
+
                     finalScore,
                     rank,
                     rankedAt

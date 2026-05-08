@@ -1,26 +1,45 @@
 package com.riansoft.farmfood.service.keyword;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.Set;
 
 @Component
 public class KeywordFilter {
 
-    private static final Set<String> STOPWORDS = Set.of(
-            "추천", "상품", "판매", "구매", "가격", "배송",
-            "정보", "관련", "오늘", "이번", "최저가",
-            "리뷰", "후기", "할인", "무료", "행사",
-            "네이버", "블로그", "뉴스", "카페", "브랜드", "판매처", "카테고리", "식품", "산지",
-            "농산물", "수산물", "해산물", "직송", "푸드", "전통", "암", "신선", "어머니"
-    );
+    private final Set<String> stopwords = new HashSet<>();
+
+    @PostConstruct
+    public void loadStopwords() {
+        ClassPathResource resource = new ClassPathResource("stopwords/food-stopwords.txt");
+
+        try (
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)
+                )
+        ) {
+            reader.lines()
+                    .map(String::trim)
+                    .filter(line -> !line.isBlank())
+                    .forEach(stopwords::add);
+
+        } catch (Exception e) {
+            throw new IllegalStateException("불용어 파일을 읽는 중 오류가 발생했습니다.", e);
+        }
+    }
 
     public boolean isValid(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             return false;
         }
 
-        if (STOPWORDS.contains(keyword)) {
+        if (stopwords.contains(keyword)) {
             return false;
         }
 
