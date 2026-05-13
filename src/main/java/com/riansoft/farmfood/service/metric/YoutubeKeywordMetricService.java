@@ -31,7 +31,7 @@ public class YoutubeKeywordMetricService {
     public void collectMetrics() {
         List<KeywordFrequencySummary> keywords =
                 extractedKeywordRepository.findKeywordFrequencySummariesBySourceTypes(
-                        List.of(SourceType.YOUTUBE), PageRequest.of(0, 50)
+                        List.of(SourceType.YOUTUBE), PageRequest.of(0, 30)
                 );
 
         for (KeywordFrequencySummary keyword : keywords) {
