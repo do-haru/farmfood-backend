@@ -23,6 +23,16 @@ public class DashboardController {
         return dashboardService.getTrendKeywordRankings();
     }
 
+    @GetMapping("/rankings/naver")
+    public List<DashboardRankingResponse> getNaverRankings() {
+        return dashboardService.getNaverRankings();
+    }
+
+    @GetMapping("/rankings/youtube")
+    public List<DashboardRankingResponse> getYoutubeRankings() {
+        return dashboardService.getYoutubeRankings();
+    }
+
     @GetMapping("/keywords/{keyword}/shopping-trends")
     public List<DashboardShoppingTrendResponse> getShoppingTrends(@PathVariable String keyword) {
         return dashboardService.getShoppingTrends(keyword);

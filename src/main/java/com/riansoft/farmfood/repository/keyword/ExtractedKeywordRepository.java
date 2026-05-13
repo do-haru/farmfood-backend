@@ -5,6 +5,7 @@ import com.riansoft.farmfood.domain.search.SourceType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,4 +30,17 @@ public interface ExtractedKeywordRepository extends JpaRepository<ExtractedKeywo
         order by sum(e.frequency) desc
         """)
     List<KeywordFrequencySummary> findKeywordFrequencySummaries(Pageable pageable);
+
+    @Query("""
+        select e.keyword as keyword,
+               sum(e.frequency) as totalFrequency
+        from ExtractedKeyword e
+        where e.sourceType in :sourceTypes
+        group by e.keyword
+        order by sum(e.frequency) desc
+        """)
+    List<KeywordFrequencySummary> findKeywordFrequencySummariesBySourceTypes(
+            @Param("sourceTypes") List<SourceType> sourceTypes,
+            Pageable pageable
+    );
 }

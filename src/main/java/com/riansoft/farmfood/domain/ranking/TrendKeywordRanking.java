@@ -15,6 +15,10 @@ public class TrendKeywordRanking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RankingType rankingType;
+
     @Column(nullable = false)
     private String keyword;
 
@@ -34,6 +38,7 @@ public class TrendKeywordRanking {
     private LocalDateTime rankedAt;
 
     public TrendKeywordRanking(
+            RankingType rankingType,
             String keyword,
             Double frequencyScore,
             Double trendScore,
@@ -41,6 +46,7 @@ public class TrendKeywordRanking {
             Integer rank,
             LocalDateTime rankedAt
     ) {
+        this.rankingType = rankingType;
         this.keyword = keyword;
         this.frequencyScore = frequencyScore;
         this.trendScore = trendScore;
@@ -48,7 +54,4 @@ public class TrendKeywordRanking {
         this.rank = rank;
         this.rankedAt = rankedAt;
     }
-
-
-
 }

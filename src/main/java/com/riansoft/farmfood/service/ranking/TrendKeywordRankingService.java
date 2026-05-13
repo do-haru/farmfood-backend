@@ -1,7 +1,8 @@
 package com.riansoft.farmfood.service.ranking;
 
-import com.riansoft.farmfood.domain.keyword.ExtractedKeyword;
+import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
+import com.riansoft.farmfood.domain.search.SourceType;
 import com.riansoft.farmfood.repository.keyword.ExtractedKeywordRepository;
 import com.riansoft.farmfood.repository.keyword.KeywordFrequencySummary;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +22,36 @@ public class TrendKeywordRankingService {
     private final TrendKeywordRankingRepository trendKeywordRankingRepository;
 
     @Transactional
-    public void calculateRanking() {
-        List<KeywordFrequencySummary> keywords =
-                extractedKeywordRepository.findKeywordFrequencySummaries(PageRequest.of(0, 20));
+    public void calculateNaverRanking() {
+        List<SourceType> naverSources = List.of(
+                SourceType.BLOG, SourceType.NEWS, SourceType.CAFE, SourceType.SHOPPING
+        );
 
+        List<KeywordFrequencySummary> keywords =
+                extractedKeywordRepository.findKeywordFrequencySummariesBySourceTypes(
+                        naverSources, PageRequest.of(0, 20)
+                );
+
+        calculateAndSave(RankingType.NAVER, keywords);
+    }
+
+    @Transactional
+    public void calculateYoutubeRanking() {
+        List<KeywordFrequencySummary> keywords =
+                extractedKeywordRepository.findKeywordFrequencySummariesBySourceTypes(
+                        List.of(SourceType.YOUTUBE), PageRequest.of(0, 20)
+                );
+
+        calculateAndSave(RankingType.YOUTUBE, keywords);
+    }
+
+    @Transactional
+    public void calculateRanking() {
+        calculateNaverRanking();
+        calculateYoutubeRanking();
+    }
+
+    private void calculateAndSave(RankingType rankingType, List<KeywordFrequencySummary> keywords) {
         if (keywords.isEmpty()) {
             return;
         }
@@ -32,25 +59,19 @@ public class TrendKeywordRankingService {
         int maxFrequency = keywords.get(0).getTotalFrequency();
         LocalDateTime rankedAt = LocalDateTime.now();
 
-        trendKeywordRankingRepository.deleteAll();
+        trendKeywordRankingRepository.deleteByRankingType(rankingType);
 
         int rank = 1;
 
         for (KeywordFrequencySummary keyword : keywords) {
-            double frequencyScore = calculateFrequencyScore(
-                    keyword.getTotalFrequency(),
-                    maxFrequency
-            );
-
-            double trendScore = 0.0;
-            double finalScore = frequencyScore;
+            double frequencyScore = calculateFrequencyScore(keyword.getTotalFrequency(), maxFrequency);
 
             TrendKeywordRanking ranking = new TrendKeywordRanking(
+                    rankingType,
                     keyword.getKeyword(),
                     frequencyScore,
-                    trendScore,
-
-                    finalScore,
+                    0.0,
+                    frequencyScore,
                     rank,
                     rankedAt
             );

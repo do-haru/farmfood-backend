@@ -3,6 +3,7 @@ package com.riansoft.farmfood.service.dashboard;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
 import com.riansoft.farmfood.domain.metric.MetricType;
+import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.repository.metric.KeywordTrendMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,20 @@ public class DashboardService {
 
     public List<DashboardRankingResponse> getTrendKeywordRankings() {
         return trendKeywordRankingRepository.findTop20ByOrderByRankAsc()
+                .stream()
+                .map(DashboardRankingResponse::from)
+                .toList();
+    }
+
+    public List<DashboardRankingResponse> getNaverRankings() {
+        return trendKeywordRankingRepository.findTop20ByRankingTypeOrderByRankAsc(RankingType.NAVER)
+                .stream()
+                .map(DashboardRankingResponse::from)
+                .toList();
+    }
+
+    public List<DashboardRankingResponse> getYoutubeRankings() {
+        return trendKeywordRankingRepository.findTop20ByRankingTypeOrderByRankAsc(RankingType.YOUTUBE)
                 .stream()
                 .map(DashboardRankingResponse::from)
                 .toList();
