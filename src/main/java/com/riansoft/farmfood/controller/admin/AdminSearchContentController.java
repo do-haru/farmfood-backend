@@ -55,4 +55,11 @@ public class AdminSearchContentController {
 
         return "쇼핑 검색 결과 수집 완료: " + keyword;
     }
+
+    @PostMapping("/collect/youtube")
+    public String collectYoutubeSearchContents(@RequestParam String keyword) {
+        searchContentService.collectYoutubeSearchContents(keyword);
+
+        return "유튜브 검색 결과 수집 완료: " + keyword;
+    }
 }

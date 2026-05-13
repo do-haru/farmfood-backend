@@ -5,6 +5,9 @@ import com.riansoft.farmfood.domain.search.SourceType;
 import com.riansoft.farmfood.external.naver.NaverSearchClient;
 import com.riansoft.farmfood.external.naver.dto.NaverSearchItem;
 import com.riansoft.farmfood.external.naver.dto.NaverSearchResponse;
+import com.riansoft.farmfood.external.youtube.YoutubeSearchClient;
+import com.riansoft.farmfood.external.youtube.dto.YoutubeSearchItem;
+import com.riansoft.farmfood.external.youtube.dto.YoutubeSearchResponse;
 import com.riansoft.farmfood.repository.search.SearchContentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ import java.util.stream.Stream;
 public class SearchContentService {
 
     private final NaverSearchClient naverSearchClient;
+    private final YoutubeSearchClient youtubeSearchClient;
     private final SearchContentRepository searchContentRepository;
 
     private final FoodSeedKeywordProvider foodSeedKeywordProvider;
@@ -117,11 +121,36 @@ public class SearchContentService {
         }
     }
 
+    public void collectYoutubeSearchContents(String searchKeyword) {
+        YoutubeSearchResponse response = youtubeSearchClient.search(searchKeyword);
+
+        for (YoutubeSearchItem item : response.getItems()) {
+            String link = "https://www.youtube.com/watch?v=" + item.getId().getVideoId();
+
+            if (isDuplicate(SourceType.YOUTUBE, link)) {
+                continue;
+            }
+
+            SearchContent content = new SearchContent(
+                    SourceType.YOUTUBE,
+                    searchKeyword,
+                    item.getSnippet().getTitle(),
+                    item.getSnippet().getDescription(),
+                    link,
+                    parsePublishedAt(item.getSnippet().getPublishedAt()),
+                    LocalDateTime.now()
+            );
+
+            searchContentRepository.save(content);
+        }
+    }
+
     public void collectAllSearchContents(String keyword) {
         collectBlogSearchContents(keyword);
         collectNewsSearchContents(keyword);
         collectCafeSearchContents(keyword);
         collectShoppingSearchContents(keyword);
+        collectYoutubeSearchContents(keyword);
     }
 
     public void collectSeedKeywordSearchContents() {
@@ -138,6 +167,13 @@ public class SearchContentService {
             return null;
         }
         return LocalDate.parse(postdate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    private LocalDate parsePublishedAt(String publishedAt) {
+        if (publishedAt == null || publishedAt.isBlank()) {
+            return null;
+        }
+        return ZonedDateTime.parse(publishedAt, DateTimeFormatter.ISO_DATE_TIME).toLocalDate();
     }
 
     private LocalDate parsePubDate(String pubDate) {

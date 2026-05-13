@@ -5,5 +5,6 @@ public enum SourceType {
     BLOG,
     NEWS,
     CAFE,
-    SHOPPING
+    SHOPPING,
+    YOUTUBE
 }
