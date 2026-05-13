@@ -39,7 +39,7 @@ public class TrendKeywordRankingService {
     public void calculateYoutubeRanking() {
         List<KeywordFrequencySummary> keywords =
                 extractedKeywordRepository.findKeywordFrequencySummariesBySourceTypes(
-                        List.of(SourceType.YOUTUBE), PageRequest.of(0, 20)
+                        List.of(SourceType.YOUTUBE), PageRequest.of(0, 60)
                 );
 
         calculateAndSave(RankingType.YOUTUBE, keywords);

@@ -8,6 +8,7 @@ POST http://localhost:8080/api/admin/keywords/extract
 
 ## 3. 관리자용 키워드 통계 지표 수집 API
 POST http://localhost:8080/api/admin/metrics/shopping-trends/collect
+POST http://localhost:8080/api/admin/metrics/youtube/collect
 
 ## 4. 관리자용 키워드 순위 산출 API
 POST http://localhost:8080/api/admin/rankings/calculate

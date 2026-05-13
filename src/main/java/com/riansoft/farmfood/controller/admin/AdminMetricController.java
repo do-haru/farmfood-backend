@@ -1,6 +1,7 @@
 package com.riansoft.farmfood.controller.admin;
 
 import com.riansoft.farmfood.service.metric.KeywordTrendMetricService;
+import com.riansoft.farmfood.service.metric.YoutubeKeywordMetricService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,11 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminMetricController {
 
     private final KeywordTrendMetricService keywordTrendMetricService;
+    private final YoutubeKeywordMetricService youtubeKeywordMetricService;
 
     @PostMapping("/shopping-trends/collect")
     public String collectShoppingTrendMetrics() {
         keywordTrendMetricService.collectShoppingTrendMetrics();
 
         return "쇼핑 트렌드 지표 수집 완료";
+    }
+
+    @PostMapping("/youtube/collect")
+    public String collectYoutubeMetrics() {
+        youtubeKeywordMetricService.collectMetrics();
+
+        return "유튜브 지표 수집 완료";
     }
 }
