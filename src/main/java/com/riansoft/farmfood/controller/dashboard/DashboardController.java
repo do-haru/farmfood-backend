@@ -39,6 +39,11 @@ public class DashboardController {
         return dashboardService.getNaverRisingKeywords();
     }
 
+    @GetMapping("/rising-keywords/youtube")
+    public List<DashboardRisingKeywordResponse> getYoutubeRisingKeywords() {
+        return dashboardService.getYoutubeRisingKeywords();
+    }
+
     @GetMapping("/keywords/{keyword}/shopping-trends")
     public List<DashboardShoppingTrendResponse> getShoppingTrends(@PathVariable String keyword) {
         return dashboardService.getShoppingTrends(keyword);

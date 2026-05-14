@@ -7,6 +7,7 @@ import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
 import com.riansoft.farmfood.repository.metric.KeywordTrendMetricRepository;
+import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class DashboardService {
 
     private final TrendKeywordRankingRepository trendKeywordRankingRepository;
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
+    private final YoutubeKeywordMetricRepository youtubeKeywordMetricRepository;
 
     public List<DashboardRankingResponse> getTrendKeywordRankings() {
         return getRankingsWithChange(RankingType.NAVER);
@@ -59,6 +61,14 @@ public class DashboardService {
 
         return keywordTrendMetricRepository
                 .findTop5RisingKeywords(recentStart, prevStart)
+                .stream()
+                .map(DashboardRisingKeywordResponse::from)
+                .toList();
+    }
+
+    public List<DashboardRisingKeywordResponse> getYoutubeRisingKeywords() {
+        return youtubeKeywordMetricRepository
+                .findTop5YoutubeRisingKeywords()
                 .stream()
                 .map(DashboardRisingKeywordResponse::from)
                 .toList();

@@ -64,24 +64,25 @@ public class YoutubeKeywordMetricService {
             return;
         }
 
-        youtubeKeywordMetricRepository.deleteByKeyword(keyword);
+        long totalViews = 0;
+        long totalLikes = 0;
+        long totalComments = 0;
 
         for (YoutubeVideoItem item : statisticsResponse.getItems()) {
             YoutubeVideoStatistics stats = item.getStatistics();
-
-            if (stats == null) {
-                continue;
-            }
-
-            youtubeKeywordMetricRepository.save(new YoutubeKeywordMetric(
-                    keyword,
-                    item.getId(),
-                    parseLong(stats.getViewCount()),
-                    parseLong(stats.getLikeCount()),
-                    parseLong(stats.getCommentCount()),
-                    LocalDateTime.now()
-            ));
+            if (stats == null) continue;
+            totalViews += parseLong(stats.getViewCount());
+            totalLikes += parseLong(stats.getLikeCount());
+            totalComments += parseLong(stats.getCommentCount());
         }
+
+        youtubeKeywordMetricRepository.save(new YoutubeKeywordMetric(
+                keyword,
+                totalViews,
+                totalLikes,
+                totalComments,
+                LocalDateTime.now()
+        ));
     }
 
     private Long parseLong(String value) {
