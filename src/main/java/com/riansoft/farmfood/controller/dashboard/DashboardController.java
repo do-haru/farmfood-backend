@@ -2,6 +2,7 @@ package com.riansoft.farmfood.controller.dashboard;
 
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
 import com.riansoft.farmfood.service.dashboard.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,11 @@ public class DashboardController {
     @GetMapping("/rising-keywords/youtube")
     public List<DashboardRisingKeywordResponse> getYoutubeRisingKeywords() {
         return dashboardService.getYoutubeRisingKeywords();
+    }
+
+    @GetMapping("/keywords/{keyword}/blog-contents")
+    public List<DashboardSearchContentResponse> getNaverBlogContents(@PathVariable String keyword) {
+        return dashboardService.getNaverBlogContents(keyword);
     }
 
     @GetMapping("/keywords/{keyword}/shopping-trends")

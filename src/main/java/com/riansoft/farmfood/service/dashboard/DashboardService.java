@@ -2,10 +2,12 @@ package com.riansoft.farmfood.service.dashboard;
 
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
+import com.riansoft.farmfood.external.naver.NaverSearchClient;
 import com.riansoft.farmfood.repository.metric.KeywordTrendMetricRepository;
 import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
@@ -24,6 +26,7 @@ public class DashboardService {
     private final TrendKeywordRankingRepository trendKeywordRankingRepository;
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
     private final YoutubeKeywordMetricRepository youtubeKeywordMetricRepository;
+    private final NaverSearchClient naverSearchClient;
 
     public List<DashboardRankingResponse> getTrendKeywordRankings() {
         return getRankingsWithChange(RankingType.NAVER);
@@ -71,6 +74,15 @@ public class DashboardService {
                 .findTop5YoutubeRisingKeywords()
                 .stream()
                 .map(DashboardRisingKeywordResponse::from)
+                .toList();
+    }
+
+    public List<DashboardSearchContentResponse> getNaverBlogContents(String keyword) {
+        return naverSearchClient.searchBlog(keyword)
+                .getItems()
+                .stream()
+                .limit(4)
+                .map(DashboardSearchContentResponse::from)
                 .toList();
     }
 
