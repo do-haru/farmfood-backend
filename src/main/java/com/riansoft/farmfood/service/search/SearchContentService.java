@@ -99,9 +99,6 @@ public class SearchContentService {
     public void collectShoppingSearchContents(String searchKeyword) {
         NaverSearchResponse response = naverSearchClient.searchShopping(searchKeyword);
 
-        System.out.println("shopping total = " + response.getTotal());
-        System.out.println("shopping item size = " + response.getItems().size());
-
         for (NaverSearchItem item : response.getItems()) {
             if (isDuplicate(SourceType.SHOPPING, item.getLink())) {
                 continue;
@@ -123,6 +120,10 @@ public class SearchContentService {
 
     public void collectYoutubeSearchContents(String searchKeyword) {
         YoutubeSearchResponse response = youtubeSearchClient.search(searchKeyword);
+
+        if (response == null || response.getItems() == null) {
+            return;
+        }
 
         for (YoutubeSearchItem item : response.getItems()) {
             String link = "https://www.youtube.com/watch?v=" + item.getId().getVideoId();

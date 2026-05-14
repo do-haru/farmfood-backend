@@ -29,9 +29,12 @@ select * from search_content
 truncate table extracted_keyword restart identity;
 select * from extracted_keyword order by frequency desc;
 
-## 3. keyword_trend_metric 테이블 조회 및 초기화
+## 3-1. keyword_trend_metric 테이블 조회 및 초기화 (Naver 쇼핑 트렌드 지표)
 truncate table keyword_trend_metric restart identity;
 select * from keyword_trend_metric;
+
+## 3-2. keyword_trend_metric 테이블 조회 및 초기화 (Naver 쇼핑 트렌드 지표)
+select * from youtube_keyword_metric;
 
 ## 4. trend_keyword_ranking 테이블 조회 및 초기화
 truncate table trend_keyword_ranking restart identity;

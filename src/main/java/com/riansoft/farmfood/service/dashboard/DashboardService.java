@@ -32,7 +32,9 @@ public class DashboardService {
     }
 
     public List<DashboardRankingResponse> getYoutubeRankings() {
-        return getRankingsWithChange(RankingType.YOUTUBE);
+        return getRankingsWithChange(RankingType.YOUTUBE).stream()
+                .limit(20)
+                .toList();
     }
 
     private List<DashboardRankingResponse> getRankingsWithChange(RankingType rankingType) {
