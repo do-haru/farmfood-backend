@@ -59,8 +59,6 @@ public class TrendKeywordRankingService {
         int maxFrequency = keywords.get(0).getTotalFrequency();
         LocalDateTime rankedAt = LocalDateTime.now();
 
-        trendKeywordRankingRepository.deleteByRankingType(rankingType);
-
         int rank = 1;
 
         for (KeywordFrequencySummary keyword : keywords) {

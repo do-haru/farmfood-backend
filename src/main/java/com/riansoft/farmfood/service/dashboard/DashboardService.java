@@ -5,6 +5,7 @@ import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResp
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
+import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
 import com.riansoft.farmfood.repository.metric.KeywordTrendMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -21,23 +24,30 @@ public class DashboardService {
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
 
     public List<DashboardRankingResponse> getTrendKeywordRankings() {
-        return trendKeywordRankingRepository.findTop20ByOrderByRankAsc()
-                .stream()
-                .map(DashboardRankingResponse::from)
-                .toList();
+        return getRankingsWithChange(RankingType.NAVER);
     }
 
     public List<DashboardRankingResponse> getNaverRankings() {
-        return trendKeywordRankingRepository.findTop20ByRankingTypeOrderByRankAsc(RankingType.NAVER)
-                .stream()
-                .map(DashboardRankingResponse::from)
-                .toList();
+        return getRankingsWithChange(RankingType.NAVER);
     }
 
     public List<DashboardRankingResponse> getYoutubeRankings() {
-        return trendKeywordRankingRepository.findTop20ByRankingTypeOrderByRankAsc(RankingType.YOUTUBE)
-                .stream()
-                .map(DashboardRankingResponse::from)
+        return getRankingsWithChange(RankingType.YOUTUBE);
+    }
+
+    private List<DashboardRankingResponse> getRankingsWithChange(RankingType rankingType) {
+        List<TrendKeywordRanking> current = trendKeywordRankingRepository.findLatestByRankingType(rankingType);
+        List<TrendKeywordRanking> previous = trendKeywordRankingRepository.findPreviousByRankingType(rankingType);
+
+        Map<String, Integer> previousRankMap = previous.stream()
+                .collect(Collectors.toMap(TrendKeywordRanking::getKeyword, TrendKeywordRanking::getRank));
+
+        return current.stream()
+                .map(r -> {
+                    Integer prevRank = previousRankMap.get(r.getKeyword());
+                    Integer rankChange = prevRank != null ? prevRank - r.getRank() : null;
+                    return DashboardRankingResponse.from(r, rankChange);
+                })
                 .toList();
     }
 

@@ -20,13 +20,16 @@ public class DashboardRankingResponse {
 
     private final LocalDateTime rankedAt;
 
+    private final Integer rankChange;
+
     public DashboardRankingResponse(
             Integer rank,
             String keyword,
             Double frequencyScore,
             Double trendScore,
             Double finalScore,
-            LocalDateTime rankedAt
+            LocalDateTime rankedAt,
+            Integer rankChange
     ) {
         this.rank = rank;
         this.keyword = keyword;
@@ -34,16 +37,18 @@ public class DashboardRankingResponse {
         this.trendScore = trendScore;
         this.finalScore = finalScore;
         this.rankedAt = rankedAt;
+        this.rankChange = rankChange;
     }
 
-    public static DashboardRankingResponse from(TrendKeywordRanking ranking) {
+    public static DashboardRankingResponse from(TrendKeywordRanking ranking, Integer rankChange) {
         return new DashboardRankingResponse(
                 ranking.getRank(),
                 ranking.getKeyword(),
                 ranking.getFrequencyScore(),
                 ranking.getTrendScore(),
                 ranking.getFinalScore(),
-                ranking.getRankedAt()
+                ranking.getRankedAt(),
+                rankChange
         );
     }
 }
