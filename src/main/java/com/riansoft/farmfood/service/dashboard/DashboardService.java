@@ -1,6 +1,7 @@
 package com.riansoft.farmfood.service.dashboard;
 
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
@@ -9,6 +10,7 @@ import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -36,6 +38,17 @@ public class DashboardService {
         return trendKeywordRankingRepository.findTop20ByRankingTypeOrderByRankAsc(RankingType.YOUTUBE)
                 .stream()
                 .map(DashboardRankingResponse::from)
+                .toList();
+    }
+
+    public List<DashboardRisingKeywordResponse> getNaverRisingKeywords() {
+        String recentStart = LocalDate.now().minusDays(7).toString();
+        String prevStart = LocalDate.now().minusDays(14).toString();
+
+        return keywordTrendMetricRepository
+                .findTop5RisingKeywords(recentStart, prevStart)
+                .stream()
+                .map(DashboardRisingKeywordResponse::from)
                 .toList();
     }
 

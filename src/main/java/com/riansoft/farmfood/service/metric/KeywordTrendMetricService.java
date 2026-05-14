@@ -1,15 +1,17 @@
 package com.riansoft.farmfood.service.metric;
 
-import com.riansoft.farmfood.domain.keyword.ExtractedKeyword;
 import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import com.riansoft.farmfood.domain.metric.MetricType;
+import com.riansoft.farmfood.domain.search.SourceType;
 import com.riansoft.farmfood.external.naver.NaverShoppingTrendClient;
 import com.riansoft.farmfood.external.naver.dto.NaverShoppingTrendData;
 import com.riansoft.farmfood.external.naver.dto.NaverShoppingTrendResponse;
 import com.riansoft.farmfood.external.naver.dto.NaverShoppingTrendResult;
 import com.riansoft.farmfood.repository.keyword.ExtractedKeywordRepository;
+import com.riansoft.farmfood.repository.keyword.KeywordFrequencySummary;
 import com.riansoft.farmfood.repository.metric.KeywordTrendMetricRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +26,18 @@ public class KeywordTrendMetricService {
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
     private final NaverShoppingTrendClient naverShoppingTrendClient;
 
+    private static final List<SourceType> NAVER_SOURCE_TYPES =
+            List.of(SourceType.BLOG, SourceType.NEWS, SourceType.CAFE, SourceType.SHOPPING);
+
     @Transactional
     public void collectShoppingTrendMetrics() {
-        List<ExtractedKeyword> keywords = extractedKeywordRepository.findTop20ByOrderByFrequencyDesc();
+        List<KeywordFrequencySummary> keywords =
+                extractedKeywordRepository.findKeywordFrequencySummariesBySourceTypes(
+                        NAVER_SOURCE_TYPES, PageRequest.of(0, 50)
+                );
 
-        for (ExtractedKeyword extractedKeyword : keywords) {
-            String keyword = extractedKeyword.getKeyword();
+        for (KeywordFrequencySummary keywordSummary : keywords) {
+            String keyword = keywordSummary.getKeyword();
 
             NaverShoppingTrendResponse response = naverShoppingTrendClient.getShoppingTrend(keyword);
 
