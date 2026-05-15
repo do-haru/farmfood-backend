@@ -4,11 +4,13 @@ import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
+import com.riansoft.farmfood.domain.ranking.PeriodType;
 import com.riansoft.farmfood.service.dashboard.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -26,8 +28,10 @@ public class DashboardController {
     }
 
     @GetMapping("/rankings/naver")
-    public List<DashboardRankingResponse> getNaverRankings() {
-        return dashboardService.getNaverRankings();
+    public List<DashboardRankingResponse> getNaverRankings(
+            @RequestParam(defaultValue = "DAILY") PeriodType periodType
+    ) {
+        return dashboardService.getNaverRankings(periodType);
     }
 
     @GetMapping("/rankings/youtube")

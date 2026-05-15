@@ -19,17 +19,16 @@ public class TrendKeywordRanking {
     @Column(nullable = false)
     private RankingType rankingType;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private PeriodType periodType;
+
+    @Column(nullable = false)
+
     private String keyword;
 
     @Column(nullable = false)
-    private Double frequencyScore;
-
-    @Column(nullable = false)
-    private Double trendScore;
-
-    @Column(nullable = false)
-    private Double finalScore;
+    private Long searchCount;
 
     @Column(nullable = false)
     private Integer rank;
@@ -39,18 +38,16 @@ public class TrendKeywordRanking {
 
     public TrendKeywordRanking(
             RankingType rankingType,
+            PeriodType periodType,
             String keyword,
-            Double frequencyScore,
-            Double trendScore,
-            Double finalScore,
+            Long searchCount,
             Integer rank,
             LocalDateTime rankedAt
     ) {
         this.rankingType = rankingType;
+        this.periodType = periodType;
         this.keyword = keyword;
-        this.frequencyScore = frequencyScore;
-        this.trendScore = trendScore;
-        this.finalScore = finalScore;
+        this.searchCount = searchCount;
         this.rank = rank;
         this.rankedAt = rankedAt;
     }

@@ -12,11 +12,7 @@ public class DashboardRankingResponse {
 
     private final String keyword;
 
-    private final Double frequencyScore;
-
-    private final Double trendScore;
-
-    private final Double finalScore;
+    private final Long searchCount;
 
     private final LocalDateTime rankedAt;
 
@@ -25,17 +21,13 @@ public class DashboardRankingResponse {
     public DashboardRankingResponse(
             Integer rank,
             String keyword,
-            Double frequencyScore,
-            Double trendScore,
-            Double finalScore,
+            Long searchCount,
             LocalDateTime rankedAt,
             Integer rankChange
     ) {
         this.rank = rank;
         this.keyword = keyword;
-        this.frequencyScore = frequencyScore;
-        this.trendScore = trendScore;
-        this.finalScore = finalScore;
+        this.searchCount = searchCount;
         this.rankedAt = rankedAt;
         this.rankChange = rankChange;
     }
@@ -44,9 +36,7 @@ public class DashboardRankingResponse {
         return new DashboardRankingResponse(
                 ranking.getRank(),
                 ranking.getKeyword(),
-                ranking.getFrequencyScore(),
-                ranking.getTrendScore(),
-                ranking.getFinalScore(),
+                ranking.getSearchCount(),
                 ranking.getRankedAt(),
                 rankChange
         );

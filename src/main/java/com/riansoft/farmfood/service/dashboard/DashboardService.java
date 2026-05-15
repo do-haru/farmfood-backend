@@ -6,6 +6,7 @@ import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResp
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
 import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import com.riansoft.farmfood.domain.metric.MetricType;
+import com.riansoft.farmfood.domain.ranking.PeriodType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
 import com.riansoft.farmfood.external.naver.NaverSearchClient;
@@ -33,22 +34,24 @@ public class DashboardService {
     private final NaverSearchClient naverSearchClient;
 
     public List<DashboardRankingResponse> getTrendKeywordRankings() {
-        return getRankingsWithChange(RankingType.NAVER);
+        return getNaverRankings(PeriodType.DAILY);
     }
 
-    public List<DashboardRankingResponse> getNaverRankings() {
-        return getRankingsWithChange(RankingType.NAVER);
+    public List<DashboardRankingResponse> getNaverRankings(PeriodType periodType) {
+        return getRankingsWithChange(RankingType.NAVER, periodType);
     }
 
     public List<DashboardRankingResponse> getYoutubeRankings() {
-        return getRankingsWithChange(RankingType.YOUTUBE).stream()
+        return getRankingsWithChange(RankingType.YOUTUBE, PeriodType.MONTHLY).stream()
                 .limit(20)
                 .toList();
     }
 
-    private List<DashboardRankingResponse> getRankingsWithChange(RankingType rankingType) {
-        List<TrendKeywordRanking> current = trendKeywordRankingRepository.findLatestByRankingType(rankingType);
-        List<TrendKeywordRanking> previous = trendKeywordRankingRepository.findPreviousByRankingType(rankingType);
+    private List<DashboardRankingResponse> getRankingsWithChange(RankingType rankingType, PeriodType periodType) {
+        List<TrendKeywordRanking> current = trendKeywordRankingRepository
+                .findLatestByRankingTypeAndPeriodType(rankingType, periodType);
+        List<TrendKeywordRanking> previous = trendKeywordRankingRepository
+                .findPreviousByRankingTypeAndPeriodType(rankingType, periodType);
 
         Map<String, Integer> previousRankMap = previous.stream()
                 .collect(Collectors.toMap(TrendKeywordRanking::getKeyword, TrendKeywordRanking::getRank));

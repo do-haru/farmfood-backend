@@ -1,17 +1,20 @@
 package com.riansoft.farmfood.service.ranking;
 
+import com.riansoft.farmfood.domain.ranking.PeriodType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
 import com.riansoft.farmfood.domain.search.SourceType;
 import com.riansoft.farmfood.repository.keyword.ExtractedKeywordRepository;
 import com.riansoft.farmfood.repository.keyword.KeywordFrequencySummary;
+import com.riansoft.farmfood.repository.metric.KeywordDailySearchEstimateRepository;
 import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
-import org.springframework.data.domain.PageRequest;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,20 +26,42 @@ public class TrendKeywordRankingService {
 
     private final ExtractedKeywordRepository extractedKeywordRepository;
     private final TrendKeywordRankingRepository trendKeywordRankingRepository;
+    private final KeywordDailySearchEstimateRepository keywordDailySearchEstimateRepository;
     private final YoutubeKeywordMetricRepository youtubeKeywordMetricRepository;
 
     @Transactional
     public void calculateNaverRanking() {
-        List<SourceType> naverSources = List.of(
-                SourceType.BLOG, SourceType.NEWS, SourceType.CAFE, SourceType.SHOPPING
-        );
+        for (PeriodType periodType : PeriodType.values()) {
+            calculateNaverRankingForPeriod(periodType);
+        }
+    }
 
-        List<KeywordFrequencySummary> keywords =
-                extractedKeywordRepository.findKeywordFrequencySummariesBySourceTypes(
-                        naverSources, PageRequest.of(0, 20)
-                );
+    private void calculateNaverRankingForPeriod(PeriodType periodType) {
+        LocalDate latestDate = keywordDailySearchEstimateRepository
+                .findLatestSearchDate()
+                .orElse(LocalDate.now().minusDays(1));
 
-        calculateAndSave(RankingType.NAVER, keywords);
+        LocalDate from = switch (periodType) {
+            case DAILY -> latestDate;
+            case WEEKLY -> latestDate.minusDays(6);
+            case MONTHLY -> latestDate.minusDays(29);
+            case YEARLY -> latestDate.minusDays(364);
+        };
+
+        List<Object[]> results = keywordDailySearchEstimateRepository
+                .findKeywordSearchCountSumBetween(from, latestDate);
+
+        if (results.isEmpty()) return;
+
+        LocalDateTime rankedAt = LocalDateTime.now();
+        int rank = 1;
+        for (Object[] row : results) {
+            String keyword = (String) row[0];
+            long searchCount = ((Number) row[1]).longValue();
+            trendKeywordRankingRepository.save(new TrendKeywordRanking(
+                    RankingType.NAVER, periodType, keyword, searchCount, rank++, rankedAt
+            ));
+        }
     }
 
     @Transactional
@@ -46,9 +71,7 @@ public class TrendKeywordRankingService {
                         List.of(SourceType.YOUTUBE), PageRequest.of(0, 30)
                 );
 
-        if (keywords.isEmpty()) {
-            return;
-        }
+        if (keywords.isEmpty()) return;
 
         int maxFrequency = keywords.get(0).getTotalFrequency();
 
@@ -57,8 +80,6 @@ public class TrendKeywordRankingService {
                 .toList();
 
         long maxEngagement = engagementScores.stream().mapToLong(Long::longValue).max().orElse(1L);
-
-        LocalDateTime rankedAt = LocalDateTime.now();
 
         record KeywordScore(String keyword, double frequencyScore, double engagementScore, double finalScore) {}
 
@@ -72,14 +93,14 @@ public class TrendKeywordRankingService {
 
         scored.sort(Comparator.comparingDouble(KeywordScore::finalScore).reversed());
 
+        LocalDateTime rankedAt = LocalDateTime.now();
         for (int i = 0; i < scored.size(); i++) {
             KeywordScore s = scored.get(i);
             trendKeywordRankingRepository.save(new TrendKeywordRanking(
                     RankingType.YOUTUBE,
+                    PeriodType.MONTHLY,
                     s.keyword(),
-                    s.frequencyScore(),
-                    s.engagementScore(),
-                    s.finalScore(),
+                    (long) s.finalScore(),
                     i + 1,
                     rankedAt
             ));
@@ -90,37 +111,5 @@ public class TrendKeywordRankingService {
     public void calculateRanking() {
         calculateNaverRanking();
         calculateYoutubeRanking();
-    }
-
-    private void calculateAndSave(RankingType rankingType, List<KeywordFrequencySummary> keywords) {
-        if (keywords.isEmpty()) {
-            return;
-        }
-
-        int maxFrequency = keywords.get(0).getTotalFrequency();
-        LocalDateTime rankedAt = LocalDateTime.now();
-
-        int rank = 1;
-
-        for (KeywordFrequencySummary keyword : keywords) {
-            double frequencyScore = calculateFrequencyScore(keyword.getTotalFrequency(), maxFrequency);
-
-            TrendKeywordRanking ranking = new TrendKeywordRanking(
-                    rankingType,
-                    keyword.getKeyword(),
-                    frequencyScore,
-                    0.0,
-                    frequencyScore,
-                    rank,
-                    rankedAt
-            );
-
-            trendKeywordRankingRepository.save(ranking);
-            rank++;
-        }
-    }
-
-    private double calculateFrequencyScore(int frequency, int maxFrequency) {
-        return ((double) frequency / maxFrequency) * 100;
     }
 }

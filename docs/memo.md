@@ -8,6 +8,7 @@ POST http://localhost:8080/api/admin/keywords/extract
 
 ## 3. 관리자용 키워드 통계 지표 수집 API
 POST http://localhost:8080/api/admin/metrics/shopping-trends/collect
+POST http://localhost:8080/api/admin/metrics/search-counts/collect
 POST http://localhost:8080/api/admin/metrics/youtube/collect
 
 ## 4. 관리자용 키워드 순위 산출 API
@@ -39,3 +40,9 @@ select * from youtube_keyword_metric;
 ## 4. trend_keyword_ranking 테이블 조회 및 초기화
 truncate table trend_keyword_ranking restart identity;
 select * from trend_keyword_ranking order by rank asc;
+
+truncate table keyword_daily_search_estimate restart identity;
+select * from keyword_daily_search_estimate;
+
+truncate table keyword_search_count restart identity;
+select * from keyword_search_count;
