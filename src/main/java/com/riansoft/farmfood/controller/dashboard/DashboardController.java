@@ -50,6 +50,21 @@ public class DashboardController {
         return dashboardService.getNaverBlogContents(keyword);
     }
 
+    @GetMapping("/keywords/{keyword}/news-contents")
+    public List<DashboardSearchContentResponse> getNaverNewsContents(@PathVariable String keyword) {
+        return dashboardService.getNaverNewsContents(keyword);
+    }
+
+    @GetMapping("/keywords/{keyword}/cafe-contents")
+    public List<DashboardSearchContentResponse> getNaverCafeContents(@PathVariable String keyword) {
+        return dashboardService.getNaverCafeContents(keyword);
+    }
+
+    @GetMapping("/keywords/{keyword}/shopping-contents")
+    public List<DashboardSearchContentResponse> getNaverShoppingContents(@PathVariable String keyword) {
+        return dashboardService.getNaverShoppingContents(keyword);
+    }
+
     @GetMapping("/keywords/{keyword}/shopping-trends")
     public List<DashboardShoppingTrendResponse> getShoppingTrends(@PathVariable String keyword) {
         return dashboardService.getShoppingTrends(keyword);

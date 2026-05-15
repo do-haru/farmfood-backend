@@ -78,11 +78,38 @@ public class DashboardService {
     }
 
     public List<DashboardSearchContentResponse> getNaverBlogContents(String keyword) {
-        return naverSearchClient.searchBlog(keyword)
+        return naverSearchClient.searchBlog(keyword, "sim")
                 .getItems()
                 .stream()
                 .limit(4)
                 .map(DashboardSearchContentResponse::from)
+                .toList();
+    }
+
+    public List<DashboardSearchContentResponse> getNaverNewsContents(String keyword) {
+        return naverSearchClient.searchNews(keyword, "sim")
+                .getItems()
+                .stream()
+                .limit(4)
+                .map(DashboardSearchContentResponse::fromNews)
+                .toList();
+    }
+
+    public List<DashboardSearchContentResponse> getNaverCafeContents(String keyword) {
+        return naverSearchClient.searchCafe(keyword, "sim")
+                .getItems()
+                .stream()
+                .limit(4)
+                .map(DashboardSearchContentResponse::from)
+                .toList();
+    }
+
+    public List<DashboardSearchContentResponse> getNaverShoppingContents(String keyword) {
+        return naverSearchClient.searchShopping(keyword)
+                .getItems()
+                .stream()
+                .limit(4)
+                .map(DashboardSearchContentResponse::fromShopping)
                 .toList();
     }
 

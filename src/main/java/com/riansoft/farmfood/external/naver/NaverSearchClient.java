@@ -26,84 +26,57 @@ public class NaverSearchClient {
     private String clientSecret;
 
     public NaverSearchResponse searchBlog(String query) {
-        URI  url = UriComponentsBuilder
+        return searchBlog(query, "date");
+    }
+
+    public NaverSearchResponse searchBlog(String query, String sort) {
+        URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/blog.json")
                 .queryParam("query", query)
                 .queryParam("display", 100)
                 .queryParam("start", 1)
-                .queryParam("sort", "date")
+                .queryParam("sort", sort)
                 .build()
                 .encode()
                 .toUri();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", clientId);
-        headers.set("X-Naver-Client-Secret", clientSecret);
-
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
-        ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                NaverSearchResponse.class
-        );
-
-        return response.getBody();
+        return exchange(url);
     }
 
     public NaverSearchResponse searchNews(String query) {
+        return searchNews(query, "date");
+    }
+
+    public NaverSearchResponse searchNews(String query, String sort) {
         URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/news.json")
                 .queryParam("query", query)
                 .queryParam("display", 10)
                 .queryParam("start", 1)
-                .queryParam("sort", "date")
+                .queryParam("sort", sort)
                 .build()
                 .encode()
                 .toUri();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", clientId);
-        headers.set("X-Naver-Client-Secret", clientSecret);
-
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
-        ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                NaverSearchResponse.class
-        );
-
-        return response.getBody();
+        return exchange(url);
     }
 
     public NaverSearchResponse searchCafe(String query) {
+        return searchCafe(query, "date");
+    }
+
+    public NaverSearchResponse searchCafe(String query, String sort) {
         URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/cafearticle.json")
                 .queryParam("query", query)
                 .queryParam("display", 10)
                 .queryParam("start", 1)
-                .queryParam("sort", "date")
+                .queryParam("sort", sort)
                 .build()
                 .encode()
                 .toUri();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-Naver-Client-Id", clientId);
-        headers.set("X-Naver-Client-Secret", clientSecret);
-
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
-        ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                NaverSearchResponse.class
-        );
-
-        return response.getBody();
+        return exchange(url);
     }
 
     public NaverSearchResponse searchShopping(String query) {
@@ -117,16 +90,18 @@ public class NaverSearchClient {
                 .encode()
                 .toUri();
 
+        return exchange(uri);
+    }
+
+    private NaverSearchResponse exchange(URI uri) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
         headers.set("X-Naver-Client-Secret", clientSecret);
 
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
         ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                request,
+                new HttpEntity<>(headers),
                 NaverSearchResponse.class
         );
 
