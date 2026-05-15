@@ -1,5 +1,6 @@
 package com.riansoft.farmfood.controller.admin;
 
+import com.riansoft.farmfood.service.metric.KeywordSearchCountService;
 import com.riansoft.farmfood.service.metric.KeywordTrendMetricService;
 import com.riansoft.farmfood.service.metric.YoutubeKeywordMetricService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ public class AdminMetricController {
 
     private final KeywordTrendMetricService keywordTrendMetricService;
     private final YoutubeKeywordMetricService youtubeKeywordMetricService;
+    private final KeywordSearchCountService keywordSearchCountService;
 
     @PostMapping("/shopping-trends/collect")
     public String collectShoppingTrendMetrics() {
@@ -27,5 +29,12 @@ public class AdminMetricController {
         youtubeKeywordMetricService.collectMetrics();
 
         return "유튜브 지표 수집 완료";
+    }
+
+    @PostMapping("/search-counts/collect")
+    public String collectMonthlySearchCounts() {
+        keywordSearchCountService.collectMonthlySearchCounts();
+
+        return "월간 검색수 수집 완료";
     }
 }

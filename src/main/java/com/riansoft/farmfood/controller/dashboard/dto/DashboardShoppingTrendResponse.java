@@ -25,4 +25,13 @@ public class DashboardShoppingTrendResponse {
                 metric.getTimeUnit()
         );
     }
+
+    public static DashboardShoppingTrendResponse fromScaled(KeywordTrendMetric metric, double scaleFactor) {
+        long scaled = Math.round(metric.getValue() * scaleFactor);
+        return new DashboardShoppingTrendResponse(
+                metric.getPeriod(),
+                (double) scaled,
+                metric.getTimeUnit()
+        );
+    }
 }

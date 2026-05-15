@@ -4,10 +4,12 @@ import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
+import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
 import com.riansoft.farmfood.external.naver.NaverSearchClient;
+import com.riansoft.farmfood.repository.metric.KeywordSearchCountRepository;
 import com.riansoft.farmfood.repository.metric.KeywordTrendMetricRepository;
 import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,6 +29,7 @@ public class DashboardService {
     private final TrendKeywordRankingRepository trendKeywordRankingRepository;
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
     private final YoutubeKeywordMetricRepository youtubeKeywordMetricRepository;
+    private final KeywordSearchCountRepository keywordSearchCountRepository;
     private final NaverSearchClient naverSearchClient;
 
     public List<DashboardRankingResponse> getTrendKeywordRankings() {
@@ -114,13 +118,30 @@ public class DashboardService {
     }
 
     public List<DashboardShoppingTrendResponse> getShoppingTrends(String keyword) {
-        return keywordTrendMetricRepository
-                .findByKeywordAndMetricTypeOrderByPeriodAsc(
-                        keyword,
-                        MetricType.SHOPPING_TREND
-                )
-                .stream()
-                .map(DashboardShoppingTrendResponse::from)
-                .toList();
+        List<KeywordTrendMetric> metrics = keywordTrendMetricRepository
+                .findByKeywordAndMetricTypeOrderByPeriodAsc(keyword, MetricType.SHOPPING_TREND);
+
+        if (metrics.isEmpty()) return List.of();
+
+        String currentYearMonth = YearMonth.now().toString();
+
+        return keywordSearchCountRepository.findByKeywordAndDate(keyword, currentYearMonth)
+                .map(searchCount -> {
+                    // 이번 달 DataLab 지수 합계 계산
+                    double monthlyIndexSum = metrics.stream()
+                            .filter(m -> m.getPeriod().startsWith(currentYearMonth))
+                            .mapToDouble(KeywordTrendMetric::getValue)
+                            .sum();
+
+                    if (monthlyIndexSum <= 0) {
+                        return metrics.stream().map(DashboardShoppingTrendResponse::from).toList();
+                    }
+
+                    double scaleFactor = searchCount.getSearchCount() / monthlyIndexSum;
+                    return metrics.stream()
+                            .map(m -> DashboardShoppingTrendResponse.fromScaled(m, scaleFactor))
+                            .toList();
+                })
+                .orElseGet(() -> metrics.stream().map(DashboardShoppingTrendResponse::from).toList());
     }
 }
