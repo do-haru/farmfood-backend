@@ -8,6 +8,7 @@ import com.riansoft.farmfood.domain.ranking.PeriodType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
 import com.riansoft.farmfood.external.naver.NaverSearchClient;
+import com.riansoft.farmfood.external.youtube.YoutubeSearchClient;
 import com.riansoft.farmfood.repository.metric.KeywordDailySearchEstimateRepository;
 import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
@@ -27,6 +28,7 @@ public class DashboardService {
     private final YoutubeKeywordMetricRepository youtubeKeywordMetricRepository;
     private final KeywordDailySearchEstimateRepository keywordDailySearchEstimateRepository;
     private final NaverSearchClient naverSearchClient;
+    private final YoutubeSearchClient youtubeSearchClient;
 
     public List<DashboardRankingResponse> getNaverRankings(PeriodType periodType) {
         return getRankingsWithChange(RankingType.NAVER, periodType);
@@ -109,6 +111,14 @@ public class DashboardService {
                 .stream()
                 .limit(4)
                 .map(DashboardSearchContentResponse::fromShopping)
+                .toList();
+    }
+
+    public List<DashboardSearchContentResponse> getYoutubeContents(String keyword) {
+        var response = youtubeSearchClient.search(keyword, 4);
+        if (response.getItems() == null) return List.of();
+        return response.getItems().stream()
+                .map(DashboardSearchContentResponse::fromYoutube)
                 .toList();
     }
 

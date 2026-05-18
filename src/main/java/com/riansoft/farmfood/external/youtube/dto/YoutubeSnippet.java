@@ -8,4 +8,5 @@ public class YoutubeSnippet {
     private String title;
     private String description;
     private String publishedAt;
+    private YoutubeThumbnails thumbnails;
 }

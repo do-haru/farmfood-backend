@@ -64,6 +64,11 @@ public class DashboardController {
         return dashboardService.getNaverShoppingContents(keyword);
     }
 
+    @GetMapping("/keywords/{keyword}/youtube-contents")
+    public List<DashboardSearchContentResponse> getYoutubeContents(@PathVariable String keyword) {
+        return dashboardService.getYoutubeContents(keyword);
+    }
+
     @GetMapping("/keywords/{keyword}/shopping-trends")
     public List<DashboardShoppingTrendResponse> getShoppingTrends(@PathVariable String keyword) {
         return dashboardService.getShoppingTrends(keyword);
