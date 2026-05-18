@@ -46,8 +46,14 @@ truncate table keyword_daily_search_estimate restart identity;
 select * from keyword_daily_search_estimate;
 
 
-## 4. 관리자용 키워드 순위 산출 API
+## 4. 순위 산출
+
+### 4-1. 관리자용 키워드 순위 산출 API
 POST http://localhost:8080/api/admin/rankings/calculate
+
+### 4.-2 trend_keyword_ranking 테이블 조회 및 초기화
+truncate table trend_keyword_ranking restart identity;
+select * from trend_keyword_ranking order by rank asc;
 
 ## 5. 키워드 랭킹 출력 API
 GET http://localhost:8080/api/dashboard/rankings
@@ -62,8 +68,6 @@ GET http://localhost:8080/api/dashboard/keywords/참외/shopping-trends
 
 
  
-## 4. trend_keyword_ranking 테이블 조회 및 초기화
-truncate table trend_keyword_ranking restart identity;
-select * from trend_keyword_ranking order by rank asc;
+
 
  
