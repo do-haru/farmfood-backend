@@ -22,11 +22,6 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping("/rankings")
-    public List<DashboardRankingResponse> getTrendKeywordRankings() {
-        return dashboardService.getTrendKeywordRankings();
-    }
-
     @GetMapping("/rankings/naver")
     public List<DashboardRankingResponse> getNaverRankings(
             @RequestParam(defaultValue = "DAILY") PeriodType periodType

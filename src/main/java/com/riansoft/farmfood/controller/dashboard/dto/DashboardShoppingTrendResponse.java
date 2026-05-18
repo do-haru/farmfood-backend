@@ -1,5 +1,6 @@
 package com.riansoft.farmfood.controller.dashboard.dto;
 
+import com.riansoft.farmfood.domain.metric.KeywordDailySearchEstimate;
 import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import lombok.Getter;
 
@@ -32,6 +33,14 @@ public class DashboardShoppingTrendResponse {
                 metric.getPeriod(),
                 (double) scaled,
                 metric.getTimeUnit()
+        );
+    }
+
+    public static DashboardShoppingTrendResponse fromEstimate(KeywordDailySearchEstimate estimate) {
+        return new DashboardShoppingTrendResponse(
+                estimate.getSearchDate().toString(),
+                (double) estimate.getSearchCount(),
+                "date"
         );
     }
 }
