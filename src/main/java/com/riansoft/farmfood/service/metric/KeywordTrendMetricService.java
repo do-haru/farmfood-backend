@@ -3,6 +3,7 @@ package com.riansoft.farmfood.service.metric;
 import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.search.SourceType;
+import com.riansoft.farmfood.service.metric.NaverSourceTypes;
 import com.riansoft.farmfood.external.naver.NaverShoppingTrendClient;
 import com.riansoft.farmfood.external.naver.dto.NaverShoppingTrendData;
 import com.riansoft.farmfood.external.naver.dto.NaverShoppingTrendResponse;
@@ -26,8 +27,7 @@ public class KeywordTrendMetricService {
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
     private final NaverShoppingTrendClient naverShoppingTrendClient;
 
-    private static final List<SourceType> NAVER_SOURCE_TYPES =
-            List.of(SourceType.BLOG, SourceType.NEWS, SourceType.CAFE, SourceType.SHOPPING);
+    private static final List<SourceType> NAVER_SOURCE_TYPES = NaverSourceTypes.NAVER_SOURCE_TYPES;
 
     @Transactional
     public void collectShoppingTrendMetrics() {
@@ -58,29 +58,21 @@ public class KeywordTrendMetricService {
             return;
         }
 
+        keywordTrendMetricRepository.deleteByKeywordAndMetricType(
+                result.getTitle(), MetricType.SHOPPING_TREND
+        );
+
         for (NaverShoppingTrendData data : result.getData()) {
-            keywordTrendMetricRepository
-                    .findByKeywordAndMetricTypeAndPeriodAndTimeUnit(
+            keywordTrendMetricRepository.save(
+                    new KeywordTrendMetric(
                             result.getTitle(),
                             MetricType.SHOPPING_TREND,
                             data.getPeriod(),
-                            timeUnit
+                            data.getRatio(),
+                            timeUnit,
+                            LocalDateTime.now()
                     )
-                    .ifPresentOrElse(
-                            metric -> {
-
-                            },
-                            () -> keywordTrendMetricRepository.save(
-                                    new KeywordTrendMetric(
-                                            result.getTitle(),
-                                            MetricType.SHOPPING_TREND,
-                                            data.getPeriod(),
-                                            data.getRatio(),
-                                            timeUnit,
-                                            LocalDateTime.now()
-                                    )
-                            )
-                    );
+            );
         }
     }
 

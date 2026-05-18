@@ -37,4 +37,13 @@ public class AdminMetricController {
 
         return "월간 검색수 수집 완료";
     }
+
+    @PostMapping("/collect/all")
+    public String collectAllMetrics() {
+        keywordTrendMetricService.collectShoppingTrendMetrics();
+        youtubeKeywordMetricService.collectMetrics();
+        keywordSearchCountService.collectMonthlySearchCounts();
+
+        return "전체 지표 수집 완료";
+    }
 }

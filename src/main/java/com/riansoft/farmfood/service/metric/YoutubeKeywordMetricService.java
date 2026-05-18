@@ -12,6 +12,7 @@ import com.riansoft.farmfood.repository.keyword.ExtractedKeywordRepository;
 import com.riansoft.farmfood.repository.keyword.KeywordFrequencySummary;
 import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class YoutubeKeywordMetricService {
@@ -35,7 +37,11 @@ public class YoutubeKeywordMetricService {
                 );
 
         for (KeywordFrequencySummary keyword : keywords) {
-            collectMetricForKeyword(keyword.getKeyword());
+            try {
+                collectMetricForKeyword(keyword.getKeyword());
+            } catch (Exception e) {
+                log.warn("유튜브 지표 수집 실패 - keyword: {}, error: {}", keyword.getKeyword(), e.getMessage());
+            }
             sleep(500);
         }
     }
@@ -43,9 +49,7 @@ public class YoutubeKeywordMetricService {
     private void collectMetricForKeyword(String keyword) {
         YoutubeSearchResponse searchResponse = youtubeSearchClient.search(keyword, 10);
 
-        if (searchResponse == null || searchResponse.getItems() == null) {
-            return;
-        }
+        if (searchResponse.getItems() == null) return;
 
         List<String> videoIds = searchResponse.getItems().stream()
                 .map(YoutubeSearchItem::getId)
@@ -60,9 +64,7 @@ public class YoutubeKeywordMetricService {
         YoutubeVideoStatisticsResponse statisticsResponse =
                 youtubeSearchClient.getVideoStatistics(videoIds);
 
-        if (statisticsResponse == null || statisticsResponse.getItems() == null) {
-            return;
-        }
+        if (statisticsResponse.getItems() == null) return;
 
         long totalViews = 0;
         long totalLikes = 0;

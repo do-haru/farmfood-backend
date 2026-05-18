@@ -5,6 +5,7 @@ import com.riansoft.farmfood.domain.metric.KeywordSearchCount;
 import com.riansoft.farmfood.domain.metric.KeywordTrendMetric;
 import com.riansoft.farmfood.domain.metric.MetricType;
 import com.riansoft.farmfood.domain.search.SourceType;
+import com.riansoft.farmfood.service.metric.NaverSourceTypes;
 import com.riansoft.farmfood.external.naver.NaverAdSearchClient;
 import com.riansoft.farmfood.repository.keyword.ExtractedKeywordRepository;
 import com.riansoft.farmfood.repository.keyword.KeywordFrequencySummary;
@@ -33,8 +34,7 @@ public class KeywordSearchCountService {
     private final KeywordTrendMetricRepository keywordTrendMetricRepository;
     private final NaverAdSearchClient naverAdSearchClient;
 
-    private static final List<SourceType> NAVER_SOURCE_TYPES =
-            List.of(SourceType.BLOG, SourceType.NEWS, SourceType.CAFE, SourceType.SHOPPING);
+    private static final List<SourceType> NAVER_SOURCE_TYPES = NaverSourceTypes.NAVER_SOURCE_TYPES;
 
     @Transactional
     public void collectMonthlySearchCounts() {
@@ -43,7 +43,7 @@ public class KeywordSearchCountService {
                         NAVER_SOURCE_TYPES, PageRequest.of(0, 50)
                 );
 
-        String yearMonth = YearMonth.now().toString(); // "2025-05"
+        String yearMonth = YearMonth.now().minusMonths(1).toString(); // "2025-04" (SA API는 전달 기준)
 
         for (KeywordFrequencySummary summary : keywords) {
             String keyword = summary.getKeyword();

@@ -67,7 +67,7 @@ public class NaverAdSearchClient {
                 .filter(item -> keyword.equals(item.getRelKeyword()))
                 .findFirst()
                 .map(NaverAdKeywordItem::getTotalMonthlySearchCount)
-                .orElse(list.isEmpty() ? 0L : list.get(0).getTotalMonthlySearchCount());
+                .orElse(0L);
     }
 
     private String generateSignature(String timestamp, String method, String path) {

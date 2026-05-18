@@ -16,6 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NaverShoppingTrendClient {
 
+    private static final String FOOD_CATEGORY_CODE = "50000006";
+
     private final RestTemplate restTemplate;
 
     @Value("${naver.client-id}")
@@ -30,11 +32,11 @@ public class NaverShoppingTrendClient {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusYears(1);
 
-        NaverShoppingTrendRequest body = new NaverShoppingTrendRequest(
+        NaverShoppingTrendRequest requestBody = new NaverShoppingTrendRequest(
                 startDate.toString(),
                 endDate.toString(),
                 "date",
-                "50000006",
+                FOOD_CATEGORY_CODE,
                 List.of(new NaverShoppingTrendKeyword(keyword, List.of(keyword)))
         );
 
@@ -43,7 +45,7 @@ public class NaverShoppingTrendClient {
         headers.set("X-Naver-Client-Id", clientId);
         headers.set("X-Naver-Client-Secret", clientSecret);
 
-        HttpEntity<NaverShoppingTrendRequest> request = new HttpEntity<>(body, headers);
+        HttpEntity<NaverShoppingTrendRequest> request = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<NaverShoppingTrendResponse> response = restTemplate.exchange(
                 url,
@@ -52,7 +54,11 @@ public class NaverShoppingTrendClient {
                 NaverShoppingTrendResponse.class
         );
 
-        return response.getBody();
+        NaverShoppingTrendResponse responseBody = response.getBody();
+        if (responseBody == null) {
+            throw new IllegalStateException("네이버 쇼핑 트렌드 API 응답이 비어 있습니다: " + keyword);
+        }
+        return responseBody;
     }
 
 }

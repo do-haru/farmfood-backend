@@ -11,12 +11,7 @@ import java.util.Optional;
 
 public interface KeywordTrendMetricRepository extends JpaRepository<KeywordTrendMetric, Long> {
 
-    Optional<KeywordTrendMetric> findByKeywordAndMetricTypeAndPeriodAndTimeUnit(
-            String keyword,
-            MetricType metricType,
-            String period,
-            String timeUnit
-    );
+    void deleteByKeywordAndMetricType(String keyword, MetricType metricType);
 
     List<KeywordTrendMetric> findByKeywordAndMetricTypeOrderByPeriodAsc(
             String keyword,
