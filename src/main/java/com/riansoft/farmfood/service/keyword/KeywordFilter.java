@@ -9,9 +9,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 @Component
 public class KeywordFilter {
+
+    private static final Pattern ONLY_DIGITS = Pattern.compile("^[0-9]+$");
 
     private final Set<String> stopwords = new HashSet<>();
 
@@ -43,7 +46,7 @@ public class KeywordFilter {
             return false;
         }
 
-        if (keyword.matches("^[0-9]+$")) {
+        if (ONLY_DIGITS.matcher(keyword).matches()) {
             return false;
         }
 
