@@ -5,7 +5,6 @@ import com.riansoft.farmfood.external.youtube.dto.YoutubeVideoStatisticsResponse
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -25,7 +24,7 @@ public class YoutubeSearchClient {
     private String apiKey;
 
     public YoutubeSearchResponse search(String query) {
-        return search(query, 50);
+        return search(query, 30);
     }
 
     public YoutubeSearchResponse search(String query, int maxResults) {
@@ -40,16 +39,18 @@ public class YoutubeSearchClient {
                 .encode()
                 .toUri();
 
-        HttpEntity<Void> request = new HttpEntity<>(new HttpHeaders());
-
         ResponseEntity<YoutubeSearchResponse> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                request,
+                HttpEntity.EMPTY,
                 YoutubeSearchResponse.class
         );
 
-        return response.getBody();
+        YoutubeSearchResponse body = response.getBody();
+        if (body == null) {
+            throw new IllegalStateException("유튜브 검색 API 응답이 비어 있습니다: " + uri);
+        }
+        return body;
     }
 
     public YoutubeVideoStatisticsResponse getVideoStatistics(List<String> videoIds) {
@@ -64,15 +65,17 @@ public class YoutubeSearchClient {
                 .encode()
                 .toUri();
 
-        HttpEntity<Void> request = new HttpEntity<>(new HttpHeaders());
-
         ResponseEntity<YoutubeVideoStatisticsResponse> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
-                request,
+                HttpEntity.EMPTY,
                 YoutubeVideoStatisticsResponse.class
         );
 
-        return response.getBody();
+        YoutubeVideoStatisticsResponse body = response.getBody();
+        if (body == null) {
+            throw new IllegalStateException("유튜브 영상 통계 API 응답이 비어 있습니다: " + uri);
+        }
+        return body;
     }
 }

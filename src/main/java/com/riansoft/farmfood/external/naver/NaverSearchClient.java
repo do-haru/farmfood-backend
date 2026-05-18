@@ -33,7 +33,7 @@ public class NaverSearchClient {
         URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/blog.json")
                 .queryParam("query", query)
-                .queryParam("display", 100)
+                .queryParam("display", 30)
                 .queryParam("start", 1)
                 .queryParam("sort", sort)
                 .build()
@@ -51,7 +51,7 @@ public class NaverSearchClient {
         URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/news.json")
                 .queryParam("query", query)
-                .queryParam("display", 10)
+                .queryParam("display", 30)
                 .queryParam("start", 1)
                 .queryParam("sort", sort)
                 .build()
@@ -69,7 +69,7 @@ public class NaverSearchClient {
         URI url = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/cafearticle.json")
                 .queryParam("query", query)
-                .queryParam("display", 10)
+                .queryParam("display", 30)
                 .queryParam("start", 1)
                 .queryParam("sort", sort)
                 .build()
@@ -83,7 +83,7 @@ public class NaverSearchClient {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/shop.json")
                 .queryParam("query", query)
-                .queryParam("display", 10)
+                .queryParam("display", 30)
                 .queryParam("start", 1)
                 .queryParam("sort", "sim")
                 .build()
@@ -105,6 +105,10 @@ public class NaverSearchClient {
                 NaverSearchResponse.class
         );
 
-        return response.getBody();
+        NaverSearchResponse body = response.getBody();
+        if (body == null) {
+            throw new IllegalStateException("네이버 검색 API 응답이 비어 있습니다: " + uri);
+        }
+        return body;
     }
 }
