@@ -4,6 +4,7 @@ import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardYoutubeReactionResponse;
 import com.riansoft.farmfood.domain.ranking.PeriodType;
 import com.riansoft.farmfood.service.dashboard.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,11 @@ public class DashboardController {
     @GetMapping("/keywords/{keyword}/shopping-contents")
     public List<DashboardSearchContentResponse> getNaverShoppingContents(@PathVariable String keyword) {
         return dashboardService.getNaverShoppingContents(keyword);
+    }
+
+    @GetMapping("/keywords/{keyword}/youtube-reaction")
+    public DashboardYoutubeReactionResponse getYoutubeReaction(@PathVariable String keyword) {
+        return dashboardService.getYoutubeReaction(keyword);
     }
 
     @GetMapping("/keywords/{keyword}/youtube-contents")

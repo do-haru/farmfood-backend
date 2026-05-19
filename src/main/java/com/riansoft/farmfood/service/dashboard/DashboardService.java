@@ -4,6 +4,7 @@ import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardShoppingTrendResponse;
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardYoutubeReactionResponse;
 import com.riansoft.farmfood.domain.ranking.PeriodType;
 import com.riansoft.farmfood.domain.ranking.RankingType;
 import com.riansoft.farmfood.domain.ranking.TrendKeywordRanking;
@@ -13,13 +14,17 @@ import com.riansoft.farmfood.repository.metric.KeywordDailySearchEstimateReposit
 import com.riansoft.farmfood.repository.metric.YoutubeKeywordMetricRepository;
 import com.riansoft.farmfood.repository.ranking.TrendKeywordRankingRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
@@ -115,11 +120,22 @@ public class DashboardService {
     }
 
     public List<DashboardSearchContentResponse> getYoutubeContents(String keyword) {
-        var response = youtubeSearchClient.search(keyword, 4);
-        if (response.getItems() == null) return List.of();
-        return response.getItems().stream()
-                .map(DashboardSearchContentResponse::fromYoutube)
-                .toList();
+        try {
+            var response = youtubeSearchClient.search(keyword, 4);
+            if (response.getItems() == null) return List.of();
+            return response.getItems().stream()
+                    .map(DashboardSearchContentResponse::fromYoutube)
+                    .toList();
+        } catch (Exception e) {
+            log.warn("유튜브 검색 API 호출 실패 - keyword: {}, error: {}", keyword, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
+        }
+    }
+
+    public DashboardYoutubeReactionResponse getYoutubeReaction(String keyword) {
+        return youtubeKeywordMetricRepository.findReactionSummaryByKeyword(keyword)
+                .map(s -> new DashboardYoutubeReactionResponse(s.getViewCount(), s.getLikeCount(), s.getCommentCount()))
+                .orElse(null);
     }
 
     public List<DashboardShoppingTrendResponse> getShoppingTrends(String keyword) {

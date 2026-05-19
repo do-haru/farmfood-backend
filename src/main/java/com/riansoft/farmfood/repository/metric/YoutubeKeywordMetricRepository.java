@@ -19,6 +19,18 @@ public interface YoutubeKeywordMetricRepository extends JpaRepository<YoutubeKey
         """)
     Long calculateEngagementScore(@Param("keyword") String keyword);
 
+    @Query("""
+        select new com.riansoft.farmfood.repository.metric.YoutubeReactionSummary(
+            sum(m.viewCount), sum(m.likeCount), sum(m.commentCount)
+        )
+        from YoutubeKeywordMetric m
+        where m.keyword = :keyword
+          and m.collectedAt = (
+              select max(m2.collectedAt) from YoutubeKeywordMetric m2 where m2.keyword = :keyword
+          )
+        """)
+    java.util.Optional<YoutubeReactionSummary> findReactionSummaryByKeyword(@Param("keyword") String keyword);
+
     @Query(value = """
         WITH latest AS (
             SELECT keyword, MAX(collected_at) AS max_time
