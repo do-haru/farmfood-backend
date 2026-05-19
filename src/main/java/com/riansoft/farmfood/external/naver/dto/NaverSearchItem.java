@@ -20,6 +20,8 @@ public class NaverSearchItem {
     private String pubDate;
 
     // 쇼핑 검색 API 필드
+    private String image;
+
     private String mallName;
 
     private String brand;

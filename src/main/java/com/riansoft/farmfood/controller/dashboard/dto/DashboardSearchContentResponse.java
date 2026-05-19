@@ -99,7 +99,8 @@ public class DashboardSearchContentResponse {
                 item.getTitle(),
                 description,
                 item.getLink(),
-                null
+                null,
+                item.getImage()
         );
     }
 }
