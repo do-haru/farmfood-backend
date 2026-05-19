@@ -27,12 +27,9 @@ public class ExtractedKeywordService {
     public void extractKeywords() {
         LocalDateTime extractedDate = LocalDateTime.now();
 
-        LocalDateTime lastExtractedDate = extractedKeywordRepository
-                .findTopByOrderByExtractedDateDesc()
-                .map(ExtractedKeyword::getExtractedDate)
-                .orElse(LocalDateTime.of(2000, 1, 1, 0, 0));
+        extractedKeywordRepository.deleteAll();
 
-        List<SearchContent> contents = searchContentRepository.findByCollectedAtAfter(lastExtractedDate);
+        List<SearchContent> contents = searchContentRepository.findAll();
 
         for (SearchContent content : contents) {
             String text = buildText(content);

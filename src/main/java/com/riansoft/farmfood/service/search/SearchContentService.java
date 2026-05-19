@@ -9,6 +9,7 @@ import com.riansoft.farmfood.external.youtube.YoutubeSearchClient;
 import com.riansoft.farmfood.external.youtube.dto.YoutubeSearchItem;
 import com.riansoft.farmfood.external.youtube.dto.YoutubeSearchResponse;
 import com.riansoft.farmfood.repository.search.SearchContentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -154,7 +155,10 @@ public class SearchContentService {
         collectYoutubeSearchContents(keyword);
     }
 
+    @Transactional
     public void collectSeedKeywordSearchContents() {
+        searchContentRepository.deleteAll();
+
         List<String> seedKeywords = foodSeedKeywordProvider.getSeedKeywords();
 
         for (String seedKeyword : seedKeywords) {
