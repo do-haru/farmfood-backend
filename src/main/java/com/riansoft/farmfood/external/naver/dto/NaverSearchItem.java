@@ -22,6 +22,8 @@ public class NaverSearchItem {
     // 쇼핑 검색 API 필드
     private String image;
 
+    private String lprice;
+
     private String mallName;
 
     private String brand;

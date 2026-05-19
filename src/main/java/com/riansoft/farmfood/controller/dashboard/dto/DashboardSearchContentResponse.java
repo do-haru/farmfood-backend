@@ -18,17 +18,23 @@ public class DashboardSearchContentResponse {
     private final String link;
     private final LocalDate publishedAt;
     private final String thumbnailUrl;
+    private final String price;
 
     public DashboardSearchContentResponse(String title, String description, String link, LocalDate publishedAt) {
-        this(title, description, link, publishedAt, null);
+        this(title, description, link, publishedAt, null, null);
     }
 
     public DashboardSearchContentResponse(String title, String description, String link, LocalDate publishedAt, String thumbnailUrl) {
+        this(title, description, link, publishedAt, thumbnailUrl, null);
+    }
+
+    public DashboardSearchContentResponse(String title, String description, String link, LocalDate publishedAt, String thumbnailUrl, String price) {
         this.title = title;
         this.description = description;
         this.link = link;
         this.publishedAt = publishedAt;
         this.thumbnailUrl = thumbnailUrl;
+        this.price = price;
     }
 
     // 블로그, 카페 (postdate: yyyyMMdd)
@@ -100,7 +106,8 @@ public class DashboardSearchContentResponse {
                 description,
                 item.getLink(),
                 null,
-                item.getImage()
+                item.getImage(),
+                item.getLprice()
         );
     }
 }

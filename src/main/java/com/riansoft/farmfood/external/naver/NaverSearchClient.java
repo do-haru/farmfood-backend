@@ -81,12 +81,16 @@ public class NaverSearchClient {
     }
 
     public NaverSearchResponse searchShopping(String query) {
+        return searchShopping(query, "sim");
+    }
+
+    public NaverSearchResponse searchShopping(String query, String sort) {
         URI uri = UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com/v1/search/shop.json")
                 .queryParam("query", query)
                 .queryParam("display", 30)
                 .queryParam("start", 1)
-                .queryParam("sort", "sim")
+                .queryParam("sort", sort)
                 .build()
                 .encode()
                 .toUri();
