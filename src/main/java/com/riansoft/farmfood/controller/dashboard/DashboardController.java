@@ -1,5 +1,6 @@
 package com.riansoft.farmfood.controller.dashboard;
 
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardKeywordImageResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
@@ -73,6 +74,11 @@ public class DashboardController {
     @GetMapping("/keywords/{keyword}/youtube-contents")
     public List<DashboardSearchContentResponse> getYoutubeContents(@PathVariable String keyword) {
         return dashboardService.getYoutubeContents(keyword);
+    }
+
+    @GetMapping("/keywords/{keyword}/image")
+    public DashboardKeywordImageResponse getKeywordImage(@PathVariable String keyword) {
+        return dashboardService.getKeywordImage(keyword);
     }
 
     @GetMapping("/keywords/{keyword}/shopping-trends")

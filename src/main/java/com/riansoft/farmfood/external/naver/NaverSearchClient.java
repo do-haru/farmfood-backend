@@ -1,5 +1,6 @@
 package com.riansoft.farmfood.external.naver;
 
+import com.riansoft.farmfood.external.naver.dto.NaverImageResponse;
 import com.riansoft.farmfood.external.naver.dto.NaverSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,19 +94,36 @@ public class NaverSearchClient {
         return exchange(uri);
     }
 
+    public NaverImageResponse searchImage(String query) {
+        URI uri = UriComponentsBuilder
+                .fromUriString("https://openapi.naver.com/v1/search/image")
+                .queryParam("query", query)
+                .queryParam("display", 1)
+                .queryParam("sort", "sim")
+                .build()
+                .encode()
+                .toUri();
+
+        return exchange(uri, NaverImageResponse.class);
+    }
+
     private NaverSearchResponse exchange(URI uri) {
+        return exchange(uri, NaverSearchResponse.class);
+    }
+
+    private <T> T exchange(URI uri, Class<T> responseType) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
         headers.set("X-Naver-Client-Secret", clientSecret);
 
-        ResponseEntity<NaverSearchResponse> response = restTemplate.exchange(
+        ResponseEntity<T> response = restTemplate.exchange(
                 uri,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                NaverSearchResponse.class
+                responseType
         );
 
-        NaverSearchResponse body = response.getBody();
+        T body = response.getBody();
         if (body == null) {
             throw new IllegalStateException("네이버 검색 API 응답이 비어 있습니다: " + uri);
         }

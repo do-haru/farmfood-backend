@@ -1,5 +1,6 @@
 package com.riansoft.farmfood.service.dashboard;
 
+import com.riansoft.farmfood.controller.dashboard.dto.DashboardKeywordImageResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRankingResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardRisingKeywordResponse;
 import com.riansoft.farmfood.controller.dashboard.dto.DashboardSearchContentResponse;
@@ -36,7 +37,9 @@ public class DashboardService {
     private final YoutubeSearchClient youtubeSearchClient;
 
     public List<DashboardRankingResponse> getNaverRankings(PeriodType periodType) {
-        return getRankingsWithChange(RankingType.NAVER, periodType);
+        return getRankingsWithChange(RankingType.NAVER, periodType).stream()
+                .limit(20)
+                .toList();
     }
 
     public List<DashboardRankingResponse> getYoutubeRankings() {
@@ -136,6 +139,18 @@ public class DashboardService {
         return youtubeKeywordMetricRepository.findReactionSummaryByKeyword(keyword)
                 .map(s -> new DashboardYoutubeReactionResponse(s.getViewCount(), s.getLikeCount(), s.getCommentCount()))
                 .orElse(null);
+    }
+
+    public DashboardKeywordImageResponse getKeywordImage(String keyword) {
+        try {
+            var response = naverSearchClient.searchImage(keyword);
+            if (response.getItems() == null || response.getItems().isEmpty()) return null;
+            String thumbnail = response.getItems().get(0).getThumbnail();
+            return thumbnail != null ? new DashboardKeywordImageResponse(thumbnail) : null;
+        } catch (Exception e) {
+            log.warn("네이버 이미지 검색 API 호출 실패 - keyword: {}, error: {}", keyword, e.getMessage());
+            return null;
+        }
     }
 
     public List<DashboardShoppingTrendResponse> getShoppingTrends(String keyword) {
